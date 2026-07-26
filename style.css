@@ -1,0 +1,260 @@
+/* ========================================================================== */
+/* 01. CONFIGURATION & ROOT VARIABLES (ค่าตัวแปรหลักของธีม Dark Fintech)        */
+/* ========================================================================== */
+:root {
+    --bg-color: #0b132b;
+    --bg-gradient: radial-gradient(circle at center, #1c2541 0%, #0b132b 100%);
+    --card-bg: rgba(19, 29, 61, 0.85);
+    --border-color: rgba(0, 180, 216, 0.2);
+    --border-hover: rgba(0, 180, 216, 0.6);
+    --text-main: #ffffff;
+    --text-muted: #8d99ae;
+    --accent-glow: #00b4d8;
+    --accent-gradient: linear-gradient(135deg, #00b4d8, #0077b6);
+    --danger-color: #ff4b4b;
+    --danger-bg: rgba(255, 75, 75, 0.1);
+    --success-color: #4ade80;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ========================================================================== */
+/* 02. GLOBAL STYLES & RESET (ตั้งค่าพื้นฐานของหน้าเว็บทั้งหมด)                 */
+/* ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: var(--bg-gradient);
+    color: var(--text-main);
+    font-family: var(--font-family);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+/* ========================================================================== */
+/* 03. LOGIN PAGE SPECIFIC STYLES (คำสั่งตกแต่งเฉพาะหน้าล็อกอินและหน้าฟอร์ม)    */
+/* ========================================================================== */
+
+/* คลาสเฉพาะสำหรับหน้าล็อกอินโดยตรง */
+body.login-page {
+    position: relative;
+}
+
+body.login-page::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(0, 180, 216, 0.05);
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* ดีไซน์การ์ดหลักสำหรับหน้าล็อกอินและสมัครสมาชิก (Auth Card) */
+.auth-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 28px;
+    padding: 36px 30px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 180, 216, 0.1);
+    animation: fadeInCard 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ไอคอนแบรนด์ธนาคารในหน้าล็อกอิน */
+.auth-card .brand-icon {
+    font-size: 44px;
+    margin-bottom: 10px;
+    color: var(--accent-glow);
+    text-shadow: 0 0 25px rgba(0, 180, 216, 0.7);
+    animation: pulseIcon 3s infinite ease-in-out;
+}
+
+/* หัวข้อรองและคำอธิบายในหน้าล็อกอิน */
+.auth-card .subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+/* ========================================================================== */
+/* 04. FORM ELEMENTS & INPUT FIELDS (ช่องกรอกข้อมูลและป้ายกำกับ)              */
+/* ========================================================================== */
+
+/* ป้ายข้อความหัวข้อช่องกรอก */
+label {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+}
+
+/* ช่องกรอกข้อมูล Text และ Password สำหรับหน้าล็อกอิน */
+input[type="text"], 
+input[type="password"] {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+/* เอฟเฟกต์เวลาคลิกหรือโฟกัสช่องกรอกข้อมูลในหน้าล็อกอิน */
+input[type="text"]:focus, 
+input[type="password"]:focus {
+    border-color: var(--accent-glow);
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.35);
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-1px);
+}
+
+/* ข้อความแจ้งเตือนความผิดพลาด (Error Box) */
+#error-message, 
+#reg-error-message {
+    background: var(--danger-bg);
+    border: 1px solid rgba(255, 75, 75, 0.3);
+    color: var(--danger-color);
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 16px;
+    animation: shakeError 0.4s ease-in-out;
+}
+
+/* ========================================================================== */
+/* 05. BUTTONS & INTERACTIVE ELEMENTS (ปุ่มกดและการตอบสนอง)                 */
+/* ========================================================================== */
+
+/* ดีไซน์ปุ่มทั่วไป */
+.btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    box-sizing: border-box;
+    letter-spacing: 0.5px;
+}
+
+/* ปุ่มหลัก (Primary Button - เช่น ปุ่มเข้าสู่ระบบ) */
+.btn-primary {
+    background: var(--accent-gradient);
+    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 180, 216, 0.4);
+}
+
+/* เอฟเฟกต์โฮเวอร์ปุ่มหลัก */
+.btn-primary:hover {
+    opacity: 0.95;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 180, 216, 0.6);
+}
+
+/* เอฟเฟกต์เวลากดปุ่ม (Active) */
+.btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 10px rgba(0, 180, 216, 0.4);
+}
+
+/* ========================================================================== */
+/* 06. ACCOUNT CARD & HOME STYLES (สำหรับหน้าโฮมและจัดการบัญชี)                */
+/* ========================================================================== */
+.account-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 28px;
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* ========================================================================== */
+/* 07. ANIMATIONS (อนิเมชันเพิ่มความมีชีวิตชีวา)                              */
+/* ========================================================================== */
+@keyframes fadeInCard {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes pulseIcon {
+    0%, 100% {
+        transform: scale(1);
+        text-shadow: 0 0 20px rgba(0, 180, 216, 0.6);
+    }
+    50% {
+        transform: scale(1.05);
+        text-shadow: 0 0 30px rgba(0, 180, 216, 0.9);
+    }
+}
+
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* ========================================== */
+/* CUTE TOAST BUBBLE NOTIFICATION             */
+/* ========================================== */
+.cute-toast-bubble {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.95), rgba(0, 119, 182, 0.95));
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 180, 216, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* เอฟเฟกต์เด้งดึ๋งนุ่มฟู */
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cute-toast-bubble.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
