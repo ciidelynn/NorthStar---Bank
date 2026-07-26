@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NorthStar Bank - ยืนยันรหัส PIN</title>
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .pin-container {
+            background: rgba(0, 180, 216, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .logo-area h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .logo-area p {
+            margin: 8px 0 24px 0;
+            font-size: 13px;
+            color: #a0aec0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #4cc9f0;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 12px;
+            padding: 14px;
+            color: #ffffff;
+            font-size: 20px;
+            text-align: center;
+            letter-spacing: 8px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 10px rgba(76, 201, 240, 0.3);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #4cc9f0;
+            color: #0b132b;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:active {
+            background: #3aa8d0;
+            transform: scale(0.98);
+        }
+
+        /* สไตล์ Toast แจ้งเตือน */
+        .cute-toast-bubble {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.95), rgba(67, 97, 238, 0.95));
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(76, 201, 240, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+
+        .cute-toast-bubble.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pin-container">
+        <div class="logo-area">
+            <h1>⭐ NorthStar Bank</h1>
+            <p>กรุณากรอกรหัส PIN 6 หลักเพื่อเข้าใช้งาน</p>
+        </div>
+        
+        <form id="pin-form">
+            <div class="form-group">
+                <label>PIN (6 หลัก)</label>
+                <input type="password" id="user-pin" class="form-control" maxlength="6" placeholder="••••••" required>
+            </div>
+            <button type="submit" class="btn-submit" id="btn-verify-pin">ยืนยัน PIN</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBGDB_x2dpynWk7ZvHmxXDJ6P4PTNfhtfE",
+            authDomain: "northstar-bank-23895.firebaseapp.com",
+            projectId: "northstar-bank-23895",
+            storageBucket: "northstar-bank-23895.firebasestorage.app",
+            messagingSenderId: "1040359606999",
+            appId: "1:1040359606999:web:2d6ec0ca70088c7d5ffe92",
+            measurementId: "G-BFLFYLF8DW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        function showCuteToast(message, isSuccess = true) {
+            const existingToast = document.getElementById("cute-toast");
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement("div");
+            toast.id = "cute-toast";
+            toast.className = "cute-toast-bubble";
+            
+            const icon = isSuccess ? "✨" : "⚠️";
+            toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+
+            if (!isSuccess) {
+                toast.style.background = "linear-gradient(135deg, rgba(255, 75, 75, 0.95), rgba(220, 38, 38, 0.95))";
+            }
+
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add("show"), 50);
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 400);
+            }, 2500);
+        }
+
+        // ตรวจสอบสถานะว่าล็อกอินอยู่จริงไหม ถ้าไม่ได้ล็อกอินให้เตะกลับหน้า index.html
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            }
+        });
+
+        // ตรวจสอบรหัส PIN เมื่อผู้ใช้กดปุ่มยืนยัน
+        document.getElementById("pin-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const enteredPin = document.getElementById("user-pin").value.trim();
+
+            if (enteredPin.length !== 6 || isNaN(enteredPin)) {
+                showCuteToast("กรุณากรอกรหัส PIN เป็นตัวเลข 6 หลัก", false);
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                showCuteToast("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่", false);
+                window.location.href = "index.html";
+                return;
+            }
+
+            try {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    
+                    // ดึง PIN จากฐานข้อมูลมาเปรียบเทียบ (รองรับทั้งฟิลด์ pin หรือ userPin)
+                    const savedPin = userData.pin || userData.userPin;
+
+                    if (savedPin && savedPin !== enteredPin) {
+                        showCuteToast("รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง", false);
+                        document.getElementById("user-pin").value = "";
+                        return;
+                    }
+
+                    showCuteToast("ยืนยัน PIN สำเร็จ!", true);
+                    setTimeout(() => {
+                        window.location.href = "home.html";
+                    }, 1000);
+                } else {
+                    showCuteToast("ไม่พบข้อมูลผู้ใช้งานในระบบ", false);
+                }
+            } catch (error) {
+                console.error("PIN verification error:", error);
+                showCuteToast("เกิดข้อผิดพลาดในการตรวจสอบ PIN", false);
+            }
+        });
+    </script>
+</body>
+</html>
