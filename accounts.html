@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NorthStar Bank - จัดการบัญชี</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            font-size: 20px;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            color: #4cc9f0;
+            padding: 8px 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ปุ่มเปิดบัญชีใหม่ */
+        .add-account-btn {
+            background: linear-gradient(135deg, #00b4d8, #4cc9f0);
+            color: #0b132b;
+            border: none;
+            padding: 14px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 20px rgba(0, 180, 216, 0.2);
+        }
+
+        .add-account-btn:active {
+            transform: scale(0.98);
+        }
+
+        .add-account-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* รายการบัญชี */
+        .account-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .account-item {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .account-item:hover, .account-item.active {
+            border-color: #4cc9f0;
+            background: rgba(0, 180, 216, 0.08);
+        }
+
+        .acc-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .acc-name-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .acc-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #4cc9f0;
+        }
+
+        .acc-type {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .acc-number {
+            font-size: 13px;
+            font-family: monospace;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .acc-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 10px;
+        }
+
+        .acc-balance {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .action-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .active-badge {
+            font-size: 11px;
+            background: #4cc9f0;
+            color: #0b132b;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .delete-btn {
+            background: rgba(255, 107, 107, 0.15);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .delete-btn:active {
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        /* Modal เปิดบัญชีใหม่ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 19, 43, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+
+        .modal-card {
+            background: #111b33;
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 24px;
+            padding: 24px;
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-card h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #ffffff;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input, .form-group select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #4cc9f0;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .btn-submit {
+            background: #4cc9f0;
+            color: #0b132b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="home.html" class="back-btn">‹ กลับหน้าหลัก</a>
+            <h2>จัดการบัญชีของคุณ</h2>
+        </div>
+
+        <!-- ปุ่มเปิดบัญชีใหม่ -->
+        <button type="button" id="open-modal-btn" class="add-account-btn">+ เปิดบัญชีใหม่ (สูงสุด 3 บัญชี)</button>
+
+        <!-- รายการบัญชี -->
+        <div id="account-list" class="account-list">
+            <!-- ข้อมูลจะถูกโหลดผ่าน JS -->
+        </div>
+    </div>
+
+    <!-- Modal สำหรับกรอกข้อมูลเปิดบัญชีเพิ่ม -->
+    <div id="create-acc-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h3>เปิดบัญชีใหม่</h3>
+            <div class="form-group">
+                <label>ชื่อบัญชี</label>
+                <input type="text" id="new-acc-name" placeholder="เช่น บัญชีเก็บเงิน, บัญชีทำธุรกิจ" value="บัญชีออมทรัพย์เพิ่มเติม">
+            </div>
+            <div class="form-group">
+                <label>ประเภทบัญชี</label>
+                <select id="new-acc-type">
+                    <option value="บัญชีส่วนตัว">บัญชีส่วนตัว</option>
+                    <option value="บัญชีธุรกิจ">บัญชีธุรกิจ</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" id="cancel-modal-btn" class="modal-btn btn-cancel">ยกเลิก</button>
+                <button type="button" id="confirm-create-btn" class="modal-btn btn-submit">ยืนยันเปิดบัญชี</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // โหลดข้อมูลบัญชีจาก localStorage (ซิงค์กับหน้า Home)
+        let accounts = JSON.parse(localStorage.getItem('user_accounts')) || [
+            { accountNumber: '3837198028', accountName: 'บัญชีออมทรัพย์หลัก', accountType: 'บัญชีส่วนตัว', balance: 0.00 }
+        ];
+
+        let activeIndex = parseInt(localStorage.getItem('active_account_index')) || 0;
+        if (activeIndex >= accounts.length) activeIndex = 0;
+
+        const listContainer = document.getElementById('account-list');
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const modalOverlay = document.getElementById('create-acc-modal');
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        const confirmCreateBtn = document.getElementById('confirm-create-btn');
+
+        function renderAccounts() {
+            listContainer.innerHTML = '';
+            
+            // เช็คจำกัดไม่เกิน 3 บัญชี
+            if (accounts.length >= 3) {
+                openModalBtn.disabled = true;
+                openModalBtn.innerText = 'เปิดบัญชีครบสูงสุดแล้ว (3 บัญชี)';
+            } else {
+                openModalBtn.disabled = false;
+                openModalBtn.innerText = '+ เปิดบัญชีใหม่ (สูงสุด 3 บัญชี)';
+            }
+
+            accounts.forEach((acc, index) => {
+                const isActive = (index === activeIndex);
+                
+                const item = document.createElement('div');
+                item.className = `account-item ${isActive ? 'active' : ''}`;
+                item.innerHTML = `
+                    <div class="acc-top">
+                        <div class="acc-name-group">
+                            <span class="acc-name">${acc.accountName}</span>
+                            <span class="acc-type">${acc.accountType || 'บัญชีส่วนตัว'}</span>
+                        </div>
+                        <span class="acc-number">${acc.accountNumber}</span>
+                    </div>
+                    <div class="acc-bottom">
+                        <span class="acc-balance">฿${Number(acc.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        <div class="action-group">
+                            ${isActive ? '<span class="active-badge">ใช้งานอยู่</span>' : '<button type="button" class="delete-btn" data-index="${index}">ลบ</button>'}
+                        </div>
+                    </div>
+                `;
+
+                // เมื่อคลิกที่ตัวการ์ด (ยกเว้นปุ่มลบ) ให้เลือกบัญชีนี้เป็นบัญชีหลักแล้วเด้งกลับหน้า Home
+                item.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') return; // ป้องกันตอนกดปุ่มลบ
+                    localStorage.setItem('active_account_index', index);
+                    window.location.href = 'home.html';
+                });
+
+                // ผูกอีเวนต์ปุ่มลบบัญชี
+                const delBtn = item.querySelector('.delete-btn');
+                if (delBtn) {
+                    delBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (accounts.length <= 1) {
+                            alert('ต้องมีบัญชีอย่างน้อย 1 บัญชีในระบบ');
+                            return;
+                        }
+                        if (confirm('คุณต้องการลบบัญชีนี้ใช่หรือไม่?')) {
+                            accounts.splice(index, 1);
+                            if (activeIndex >= accounts.length) activeIndex = accounts.length - 1;
+                            localStorage.setItem('user_accounts', JSON.stringify(accounts));
+                            localStorage.setItem('active_account_index', activeIndex);
+                            renderAccounts();
+                        }
+                    });
+                }
+
+                listContainer.appendChild(item);
+            });
+        }
+
+        // ควบคุม Modal เปิดบัญชี
+        openModalBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'flex';
+        });
+
+        cancelModalBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+        });
+
+        // สุ่มเลขบัญชี 10 หลัก
+        function generateAccountNumber() {
+            let result = '';
+            for (let i = 0; i < 10; i++) {
+                result += Math.floor(Math.random() * 10);
+            }
+            return result;
+        }
+
+        // ยืนยันการสร้างบัญชีใหม่
+        confirmCreateBtn.addEventListener('click', () => {
+            const nameInput = document.getElementById('new-acc-name').value.trim() || 'บัญชีเพิ่มเติม';
+            const typeSelect = document.getElementById('new-acc-type').value;
+
+            if (accounts.length >= 3) {
+                alert('คุณมีบัญชีครบตามจำนวนสูงสุดที่กำหนดแล้ว (3 บัญชี)');
+                modalOverlay.style.display = 'none';
+                return;
+            }
+
+            const newAccount = {
+                accountNumber: generateAccountNumber(),
+                accountName: nameInput,
+                accountType: typeSelect,
+                balance: 0.00
+            };
+
+            accounts.push(newAccount);
+            localStorage.setItem('user_accounts', JSON.stringify(accounts));
+            
+            // ตั้งค่าให้บัญชีใหม่เป็นบัญชีที่ใช้งานทันที
+            localStorage.setItem('active_account_index', accounts.length - 1);
+
+            modalOverlay.style.display = 'none';
+            window.location.href = 'home.html';
+        });
+
+        renderAccounts();
+    </script>
+</body>
+</html>
