@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NorthStar Bank - ประวัติการทำรายการ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header-card {
+            background: rgba(0, 180, 216, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            color: #4cc9f0;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .info-account-box {
+            background: rgba(0, 180, 216, 0.06);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 16px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-account-box span {
+            color: #4cc9f0;
+            font-weight: 600;
+        }
+
+        /* รายการการ์ดประวัติแนวนอน */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .history-card:hover {
+            border-color: rgba(0, 180, 216, 0.4);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .history-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .history-desc {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        .history-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .history-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .amount-green {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2a9d8f;
+        }
+
+        .amount-red {
+            font-size: 15px;
+            font-weight: 700;
+            color: #e63946;
+        }
+
+        .history-date {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 40px 0;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ส่วนหัว -->
+        <div class="header-card">
+            <a href="home.html" class="back-btn">‹</a>
+            <h1 class="header-title">ประวัติการทำรายการ</h1>
+        </div>
+
+        <!-- แสดงข้อมูลบัญชีที่กำลังตรวจสอบประวัติ -->
+        <div class="info-account-box" id="active-acc-label">
+            กำลังโหลดข้อมูล...
+        </div>
+
+        <!-- รายการประวัติ -->
+        <div class="history-list" id="history-container">
+            <!-- เรนเดอร์ด้วย JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // โหลดข้อมูลบัญชีและบัญชีที่เลือกใช้งานอยู่ปัจจุบัน
+        const accounts = JSON.parse(localStorage.getItem('user_accounts')) || [
+            { accountNumber: '3837198028', accountName: 'บัญชีออมทรัพย์หลัก', balance: 0.00 }
+        ];
+        const activeIndex = parseInt(localStorage.getItem('active_account_index')) || 0;
+        const currentAcc = accounts[activeIndex] || accounts[0];
+
+        // แสดงชื่อและเลขบัญชีที่กำลังดูประวัติ
+        document.getElementById('active-acc-label').innerHTML = `บัญชี: <span>${currentAcc.accountName} (${currentAcc.accountNumber})</span>`;
+
+        let historyList = JSON.parse(localStorage.getItem('transaction_history')) || [];
+
+        // ฟังก์ชันแปลงวันที่รูปแบบ DD/MM/YYYY เป็น timestamp เพื่อเช็คเงื่อนไข 30 วัน
+        function parseDate(dateStr) {
+            const parts = dateStr.split('/');
+            if (parts.length !== 3) return 0;
+            // ใช้ปี ค.ศ. (สมมติเก็บเป็น ค.ศ. หรือแปลงตามระบบ)
+            return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
+        }
+
+        const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+
+        // กรองรายการที่เกิน 30 วันออกอัตโนมัติ
+        historyList = historyList.filter(item => {
+            const itemTime = parseDate(item.date);
+            return itemTime >= thirtyDaysAgo;
+        });
+
+        // บันทึกรายการที่กรองแล้วกลับลง LocalStorage
+        localStorage.setItem('transaction_history', JSON.stringify(historyList));
+
+        // กรองแสดงเฉพาะรายการที่เกี่ยวข้องกับเลขบัญชีปัจจุบัน
+        const container = document.getElementById('history-container');
+        container.innerHTML = '';
+
+        // ค้นหารายการของบัญชีนี้ (ทั้งโอนออกและได้รับเงิน)
+        const filteredHistory = historyList.filter(item => {
+            // เงื่อนไข: ตรงกับบัญชีผู้โอน หรือ ตรงกับบัญชีผู้รับ (กรณีโอนเข้าบัญชีอื่นในเครื่องเดียวกัน)
+            return item.accountNumber === currentAcc.accountNumber || item.receiverNum === currentAcc.accountNumber;
+        });
+
+        if (filteredHistory.length === 0) {
+            container.innerHTML = `<div class="empty-history">ยังไม่มีประวัติการทำรายการใน 30 วันนี้</div>`;
+        } else {
+            filteredHistory.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'history-card';
+
+                const isSender = (item.accountNumber === currentAcc.accountNumber);
+                const amountFormatted = Number(item.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                let descHtml = '';
+                let amountHtml = '';
+
+                if (isSender) {
+                    // กรณีโอนเงินออก
+                    descHtml = `คุณโอนเงินให้ ${item.receiverName}`;
+                    amountHtml = `<span class="amount-red">-${amountFormatted} ฿</span>`;
+                } else {
+                    // กรณีได้รับเงิน (ดึงชื่อบัญชีคนโอนจากรายการ)
+                    // ค้นหาชื่อบัญชีผู้โอนจากเลขบัญชี item.accountNumber ถ้ามีในระบบ
+                    let senderDisplayName = "ผู้โอน";
+                    accounts.forEach(acc => {
+                        if (acc.accountNumber === item.accountNumber) {
+                            senderDisplayName = acc.accountName;
+                        }
+                    });
+                    if (senderDisplayName === "ผู้โอน" && item.senderName) {
+                        senderDisplayName = item.senderName;
+                    }
+
+                    descHtml = `ได้รับเงิน จาก ${senderDisplayName}`;
+                    amountHtml = `<span class="amount-green">+${amountFormatted} ฿</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="history-left">
+                        <div class="history-desc">${descHtml}</div>
+                        <div class="history-sub">หมายเหตุ: ${item.note || '-'}</div>
+                    </div>
+                    <div class="history-right">
+                        ${amountHtml}
+                        <div class="history-date">${item.date} ${item.time}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
