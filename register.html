@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NorthStar Bank - สมัครสมาชิก</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* สไตล์เสริมเฉพาะหน้าสมัครสมาชิกเพื่อความสวยงามพรีเมียม */
+        body.login-page {
+            background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .auth-card {
+            background: rgba(0, 180, 216, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 35px 28px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-custom:focus {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 10px rgba(76, 201, 240, 0.3);
+        }
+
+        .btn-custom {
+            width: 100%;
+            background: #4cc9f0;
+            color: #0b132b;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-sizing: border-box;
+        }
+
+        .btn-custom:active {
+            background: #3aa8d0;
+        }
+    </style>
+</head>
+<body class="login-page">
+
+    <div class="auth-card">
+        <!-- ป้ายกำกับหน้าสมัครสมาชิก -->
+        <div style="background: rgba(0, 180, 216, 0.1); border: 1px dashed #4cc9f0; padding: 6px 10px; border-radius: 10px; margin-bottom: 24px; text-align: center;">
+            <span style="color: #4cc9f0; font-size: 12px; font-weight: 600; letter-spacing: 0.5px;">📝 REGISTER PAGE</span>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 28px;">
+            <h2 style="margin: 0; font-size: 26px; color: #4cc9f0; font-weight: 700;">NorthStar Bank</h2>
+            <p style="margin: 6px 0 0 0; color: #a0aec0; font-size: 14px;">สร้างบัญชีผู้ใช้ใหม่</p>
+        </div>
+
+        <!-- กล่องแจ้งเตือน Error -->
+        <div id="reg-error-message" style="color: #ff6b6b; background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); padding: 10px; border-radius: 8px; font-size: 13px; text-align: center; margin-bottom: 16px; display: none;"></div>
+
+        <!-- ช่องกรอก Username -->
+        <div style="margin-bottom: 18px;">
+            <label style="color: #4cc9f0; font-size: 13px; display: block; margin-bottom: 8px; font-weight: 500;">กำหนด Username</label>
+            <input type="text" id="reg-username" class="form-control-custom" placeholder="กรอกชื่อผู้ใช้ของคุณ">
+        </div>
+
+        <!-- ช่องกรอกรหัสผ่าน -->
+        <div style="margin-bottom: 24px;">
+            <label style="color: #4cc9f0; font-size: 13px; display: block; margin-bottom: 8px; font-weight: 500;">กำหนดรหัสผ่าน</label>
+            <input type="password" id="reg-password" class="form-control-custom" placeholder="••••••••">
+        </div>
+
+        <!-- ปุ่มสมัครสมาชิก -->
+        <button type="button" id="btn-register" class="btn-custom" style="margin-bottom: 20px;">สมัครสมาชิก</button>
+
+        <div style="text-align: center; font-size: 14px;">
+            <span style="color: #a0aec0;">มีบัญชีอยู่แล้ว? </span>
+            <a href="index.html" style="color: #4cc9f0; text-decoration: none; font-weight: 600;">เข้าสู่ระบบ</a>
+        </div>
+    </div>
+
+    <!-- เชื่อมต่อ Firebase และจัดการระบบสมัครสมาชิก -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBGDB_x2dpynWk7ZvHmxXDJ6P4PTNfhtfE",
+            authDomain: "northstar-bank-23895.firebaseapp.com",
+            projectId: "northstar-bank-23895",
+            storageBucket: "northstar-bank-23895.firebasestorage.app",
+            messagingSenderId: "1040359606999",
+            appId: "1:1040359606999:web:2d6ec0ca70088c7d5ffe92"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ฟังก์ชันสร้างเลขบัญชีสุ่ม 10 หลัก
+        function generateAccountNumber() {
+            let accNo = '';
+            for (let i = 0; i < 10; i++) {
+                accNo += Math.floor(Math.random() * 10);
+            }
+            return accNo;
+        }
+
+        document.getElementById('btn-register').addEventListener('click', async () => {
+            const usernameInput = document.getElementById('reg-username').value.trim();
+            const passwordInput = document.getElementById('reg-password').value.trim();
+            const errorBox = document.getElementById('reg-error-message');
+
+            errorBox.style.display = 'none';
+            errorBox.innerText = '';
+
+            if (!usernameInput || !passwordInput) {
+                errorBox.innerText = 'กรุณากรอก Username และรหัสผ่านให้ครบถ้วน';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            try {
+                // เช็คว่า Username นี้มีคนใช้หรือยัง
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("username", "==", usernameInput));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    errorBox.innerText = 'Username นี้ถูกใช้งานแล้ว กรุณาเลือกชื่ออื่น';
+                    errorBox.style.display = 'block';
+                    return;
+                }
+
+                // สร้างเลขบัญชีเริ่มต้นให้กับผู้ใช้ใหม่
+                const newAccountNumber = generateAccountNumber();
+                const newUserDocRef = doc(collection(db, "users"));
+
+                const newUserData = {
+                    username: usernameInput,
+                    password: passwordInput, // แนะนำในระบบจริงควรเข้ารหัส แต่โครงสร้างเดิมเก็บแบบนี้เพื่อให้เข้ากันได้
+                    createdAt: new Date().toISOString(),
+                    accounts: [
+                        {
+                            accountNumber: newAccountNumber,
+                            accountName: usernameInput,
+                            accountType: 'ออมทรัพย์ (Savings)',
+                            balance: 1000.00 // ยอดเงินเริ่มต้นต้อนรับสมาชิกใหม่
+                        }
+                    ]
+                };
+
+                // บันทึกลง Firebase Firestore
+                await setDoc(newUserDocRef, newUserData);
+
+                // บันทึกสถานะผู้ใช้ปัจจุบันลง LocalStorage เพื่อให้หน้าหลักผู้ใช้โหลดข้อมูลถูกเครื่อง
+                localStorage.setItem('current_user_doc_id', newUserDocRef.id);
+                localStorage.setItem('current_username', usernameInput);
+
+                alert('สมัครสมาชิกสำเร็จ! ระบบได้สร้างบัญชีและเพิ่มยอดเงินเริ่มต้นให้เรียบร้อยแล้ว');
+                window.location.href = 'index.html'; // หรือหน้า Dashboard หลักของผู้ใช้งาน
+
+            } catch (error) {
+                console.error("Register error:", error);
+                errorBox.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล กรุณาลองใหม่อีกครั้ง';
+                errorBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
