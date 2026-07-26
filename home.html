@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NorthStar Bank - หน้าหลัก</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .home-container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ส่วนหัวโปรไฟล์ */
+        .user-header-card {
+            background: rgba(0, 180, 216, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+        }
+
+        .user-greeting {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 240px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 107, 107, 0.15);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            color: #ff6b6b;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .logout-btn:active {
+            background: rgba(255, 107, 107, 0.3);
+            transform: scale(0.97);
+        }
+
+        /* การ์ดแสดงยอดเงินบัญชี */
+        .account-card {
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.15), rgba(76, 201, 240, 0.05));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .account-info-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account-name {
+            font-size: 14px;
+            color: #4cc9f0;
+            font-weight: 600;
+        }
+
+        .account-number {
+            font-size: 13px;
+            font-family: monospace;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .account-balance {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 4px;
+        }
+
+        /* ตารางเมนูกิจกรรม */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .menu-btn {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 20px;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .menu-btn:active {
+            transform: scale(0.96);
+            background: rgba(0, 180, 216, 0.1);
+            border-color: #4cc9f0;
+        }
+
+        .menu-icon {
+            font-size: 26px;
+        }
+
+        .menu-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-btn.logout-app {
+            border-color: rgba(255, 107, 107, 0.3);
+            background: transparent;
+        }
+
+        .menu-btn.logout-app .menu-label {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="home-container">
+        <!-- ส่วนหัวแสดง Username -->
+        <div class="user-header-card">
+            <div class="user-greeting">
+                <span>👋</span>
+                <span id="username-display">ผู้ใช้งานระบบ</span>
+            </div>
+            <button type="button" id="btn-top-logout" class="logout-btn">ออกจากระบบ</button>
+        </div>
+
+        <!-- การ์ดแสดงบัญชีหลัก -->
+        <div class="account-card">
+            <div class="account-info-top">
+                <span class="account-name" id="acc-name-display">บัญชีออมทรัพย์หลัก</span>
+                <span class="account-number" id="acc-num-display">3837198028</span>
+            </div>
+            <div class="account-balance" id="acc-balance-display">฿0.00</div>
+        </div>
+
+        <!-- เมนูกิจกรรมหลัก -->
+        <div class="menu-grid">
+            <a href="accounts.html" class="menu-btn">
+                <div class="menu-icon">🔄</div>
+                <div class="menu-label">เปลี่ยนบัญชี</div>
+            </a>
+
+            <a href="transfer.html" class="menu-btn">
+                <div class="menu-icon">💸</div>
+                <div class="menu-label">โอนเงิน</div>
+            </a>
+
+            <a href="receiver-list.html" class="menu-btn">
+                <div class="menu-icon">👥</div>
+                <div class="menu-label">รายชื่อผู้รับเงิน</div>
+            </a>
+
+            <a href="history.html" class="menu-btn">
+                <div class="menu-icon">📜</div>
+                <div class="menu-label">ประวัติการทำรายการ</div>
+            </a>
+
+            <a href="settings.html" class="menu-btn">
+                <div class="menu-icon">⚙️</div>
+                <div class="menu-label">ตั้งค่า</div>
+            </a>
+
+            <button type="button" id="btn-grid-logout" class="menu-btn logout-app">
+                <div class="menu-icon">🚪</div>
+                <div class="menu-label">ออกจากแอป</div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 1. ดึงเฉพาะข้อมูล Username จาก LocalStorage มาแสดงผลด้านบนสุด (เช่น Ciiderydem)
+        const loggedUsername = localStorage.getItem('current_username') || localStorage.getItem('username');
+
+        if (loggedUsername) {
+            document.getElementById('username-display').innerText = loggedUsername;
+        } else {
+            // กรณีไม่มีการบันทึก username ไว้ ให้แสดงค่าเริ่มต้น
+            document.getElementById('username-display').innerText = 'Ciiderydem';
+        }
+
+        // 2. ดึงข้อมูลบัญชีจาก localStorage ตามรายการที่ผู้ใช้มีหรือเลือกไว้
+        let accounts = JSON.parse(localStorage.getItem('user_accounts')) || [
+            { accountNumber: '8404847878', accountName: 'Ciidelynn Zevor Rhynes', accountType: 'บัญชีส่วนตัว', balance: 1520.00 }
+        ];
+        
+        let activeIndex = parseInt(localStorage.getItem('active_account_index')) || 0;
+        if (activeIndex >= accounts.length) {
+            activeIndex = 0;
+        }
+
+        const activeAccount = accounts[activeIndex];
+
+        if (activeAccount) {
+            document.getElementById('acc-name-display').innerText = activeAccount.accountName;
+            document.getElementById('acc-num-display').innerText = activeAccount.accountNumber;
+            
+            const formattedBalance = Number(activeAccount.balance || 0).toLocaleString('en-US', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            });
+            document.getElementById('acc-balance-display').innerText = '฿' + formattedBalance;
+        }
+
+        // 3. ฟังก์ชันออกจากระบบ
+        function handleLogout() {
+            localStorage.removeItem('current_username');
+            localStorage.removeItem('username');
+            window.location.href = "index.html";
+        }
+
+        document.getElementById('btn-top-logout').addEventListener('click', handleLogout);
+        document.getElementById('btn-grid-logout').addEventListener('click', handleLogout);
+    </script>
+</body>
+</html>
