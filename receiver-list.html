@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NorthStar Bank - รายชื่อผู้รับเงิน</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header-card {
+            background: rgba(0, 180, 216, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            color: #4cc9f0;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .card-box {
+            background: rgba(0, 180, 216, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4cc9f0;
+            margin-bottom: 2px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .form-input:focus {
+            border-color: #4cc9f0;
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        .btn-submit {
+            background: #4cc9f0;
+            color: #0b132b;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+            background: #3aa8cb;
+        }
+
+        .beneficiary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .beneficiary-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .beneficiary-item:hover {
+            background: rgba(0, 180, 216, 0.12);
+            border-color: #4cc9f0;
+        }
+
+        .beneficiary-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .beneficiary-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .beneficiary-num {
+            font-size: 12px;
+            font-family: monospace;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .delete-btn {
+            background: rgba(255, 107, 107, 0.15);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            color: #ff6b6b;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .delete-btn:active {
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        .empty-text {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            padding: 15px 0;
+        }
+
+        #error-msg {
+            color: #ff6b6b;
+            font-size: 12px;
+            min-height: 14px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ส่วนหัว -->
+        <div class="header-card">
+            <a href="home.html" class="back-btn">‹</a>
+            <h1 class="header-title">รายชื่อผู้รับเงิน</h1>
+        </div>
+
+        <!-- ฟอร์มเพิ่มผู้รับใหม่ -->
+        <div class="card-box">
+            <div class="section-title">➕ เพิ่มผู้รับใหม่</div>
+            <div id="error-msg"></div>
+
+            <div class="form-group">
+                <label class="form-label">ชื่อ - นามสกุล หรือ ชื่อเรียก</label>
+                <input type="text" id="ben-name" class="form-input" placeholder="เช่น คุณแม่, ร้านค้า">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">เลขที่บัญชีปลายทาง (10 หลัก)</label>
+                <input type="text" id="ben-num" class="form-input" maxlength="10" placeholder="กรอกเลขบัญชี 10 หลัก">
+            </div>
+
+            <button type="button" id="btn-add-ben" class="btn-submit">บันทึกผู้รับเงิน</button>
+        </div>
+
+        <!-- รายชื่อผู้รับเงินทั้งหมด -->
+        <div class="card-box">
+            <div class="section-title">📋 สมุดบัญชีผู้รับ (คลิกเพื่อโอน)</div>
+            <div class="beneficiary-list" id="ben-list">
+                <div class="empty-text">กำลังโหลดรายชื่อ...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // โหลดข้อมูลผู้รับจาก LocalStorage
+        let beneficiaries = JSON.parse(localStorage.getItem('user_beneficiaries')) || [];
+
+        function renderBeneficiaries() {
+            const listContainer = document.getElementById('ben-list');
+            listContainer.innerHTML = '';
+
+            if (beneficiaries.length === 0) {
+                listContainer.innerHTML = `<div class="empty-text">ยังไม่มีรายชื่อผู้รับที่บันทึกไว้</div>`;
+                return;
+            }
+
+            beneficiaries.forEach((ben, index) => {
+                const item = document.createElement('div');
+                item.className = 'beneficiary-item';
+                
+                // คลิกเพื่อไปหน้าโอนเงินพร้อมพ่วงค่าพารามิเตอร์
+                item.addEventListener('click', () => {
+                    window.location.href = `transfer.html?account=${ben.accountNumber}&name=${encodeURIComponent(ben.name)}`;
+                });
+
+                item.innerHTML = `
+                    <div class="beneficiary-info">
+                        <span class="beneficiary-name">${ben.name}</span>
+                        <span class="beneficiary-num">${ben.accountNumber}</span>
+                    </div>
+                    <button type="button" class="delete-btn" data-index="${index}">ลบ</button>
+                `;
+                listContainer.appendChild(item);
+            });
+
+            // ผูกอีเวนต์ปุ่มลบ
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // ป้องกันไม่ให้คลิกปุ่มลบแล้วเด้งไปหน้าโอน
+                    const idx = parseInt(e.target.getAttribute('data-index'));
+                    beneficiaries.splice(idx, 1);
+                    localStorage.setItem('user_beneficiaries', JSON.stringify(beneficiaries));
+                    renderBeneficiaries();
+                });
+            });
+        }
+
+        // ปุ่มบันทึกผู้รับเงินใหม่
+        document.getElementById('btn-add-ben').addEventListener('click', () => {
+            const errorMsg = document.getElementById('error-msg');
+            errorMsg.innerText = '';
+
+            const nameVal = document.getElementById('ben-name').value.trim();
+            const numVal = document.getElementById('ben-num').value.trim();
+
+            if (!nameVal) {
+                errorMsg.innerText = 'กรุณากรอกชื่อผู้รับเงิน';
+                return;
+            }
+
+            if (!numVal || numVal.length !== 10) {
+                errorMsg.innerText = 'กรุณากรอกเลขบัญชีปลายทาง 10 หลักให้ถูกต้อง';
+                return;
+            }
+
+            if (beneficiaries.some(b => b.accountNumber === numVal)) {
+                errorMsg.innerText = 'มีเลขที่บัญชีนี้อยู่ในรายชื่อแล้ว';
+                return;
+            }
+
+            beneficiaries.push({ name: nameVal, accountNumber: numVal });
+            localStorage.setItem('user_beneficiaries', JSON.stringify(beneficiaries));
+
+            // ล้างช่องกรอกข้อมูล
+            document.getElementById('ben-name').value = '';
+            document.getElementById('ben-num').value = '';
+
+            renderBeneficiaries();
+            alert('บันทึกรายชื่อผู้รับสำเร็จ!');
+        });
+
+        // โหลดแสดงผลเมื่อเปิดหน้าเว็บ
+        renderBeneficiaries();
+    </script>
+</body>
+</html>
