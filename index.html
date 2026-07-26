@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NorthStar Bank - เข้าสู่ระบบ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .login-card {
+            background: rgba(0, 180, 216, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .login-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .login-header p {
+            margin: 6px 0 0 0;
+            font-size: 14px;
+            color: #4cc9f0;
+            text-align: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .form-input:focus {
+            border-color: #4cc9f0;
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        .btn-submit {
+            background: #4cc9f0;
+            color: #0b132b;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+            background: #3aa8cb;
+        }
+
+        #login-msg {
+            font-size: 13px;
+            text-align: center;
+            min-height: 18px;
+            margin: 0;
+        }
+
+        .register-link {
+            text-align: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+
+        .register-link a {
+            color: #4cc9f0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h1>⭐ NorthStar Bank</h1>
+            <p>เข้าสู่ระบบเพื่อใช้งาน</p>
+        </div>
+
+        <div id="login-msg"></div>
+
+        <div class="form-group">
+            <label class="form-label">ชื่อผู้ใช้งาน (Username)</label>
+            <input type="text" id="login-user" class="form-input" placeholder="กรอกชื่อผู้ใช้งาน">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">รหัสผ่าน (Password)</label>
+            <input type="password" id="login-pass" class="form-input" placeholder="กรอกรหัสผ่าน">
+        </div>
+
+        <button type="button" id="btn-login" class="btn-submit">เข้าสู่ระบบ</button>
+
+        <div class="register-link">
+            ยังไม่มีบัญชีใช่หรือไม่? <a href="register.html">สมัครสมาชิก</a>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin() {
+            const userInput = document.getElementById('login-user').value.trim();
+            const passInput = document.getElementById('login-pass').value;
+            const msgEl = document.getElementById('login-msg');
+            msgEl.innerText = '';
+
+            if (!userInput || !passInput) {
+                msgEl.style.color = '#ff6b6b';
+                msgEl.innerText = 'กรุณากรอกข้อมูลให้ครบถ้วน';
+                return;
+            }
+
+            // 1. เช็คสิทธิ์แอดมิน
+            if (userInput === 'admin' && passInput === 'adminciily') {
+                msgEl.style.color = '#4cc9f0';
+                msgEl.innerText = 'กำลังเข้าสู่ระบบแอดมิน...';
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 600);
+                return;
+            }
+
+            // 2. สำหรับผู้ใช้ทั่วไป (ไม่ต้องเช็ค Firebase ให้ยุ่งยาก แค่พิมพ์ชื่อแล้วเข้าหน้าหลักได้เลย)
+            // บันทึกชื่อผู้ใช้เก็บไว้ในเครื่องชั่วคราวเพื่อให้หน้า home ดึงไปแสดงผล
+            localStorage.setItem('current_username', userInput);
+
+            msgEl.style.color = '#2a9d8f';
+            msgEl.innerText = 'เข้าสู่ระบบสำเร็จ!';
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 600);
+        }
+
+        document.getElementById('btn-login').addEventListener('click', handleLogin);
+        
+        document.getElementById('login-pass').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>
