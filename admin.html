@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NorthStar Bank - Admin Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 🔐 หน้าจอเข้าสู่ระบบแอดมิน */
+        .login-wrapper {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(0, 180, 216, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-sizing: border-box;
+            margin: auto;
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .login-subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        /* ส่วนแดชบอร์ดหลัก (ซ่อนไว้ก่อนจนกว่าจะล็อกอินผ่าน) */
+        #admin-dashboard {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header-card {
+            background: rgba(0, 180, 216, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title span {
+            color: #4cc9f0;
+            font-size: 14px;
+            background: rgba(0, 180, 216, 0.15);
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 180, 216, 0.3);
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+            max-width: 260px;
+            box-sizing: border-box;
+        }
+
+        .btn-logout {
+            background: rgba(230, 57, 70, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(230, 57, 70, 0.4);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #e63946;
+            color: #ffffff;
+        }
+
+        .card-box {
+            background: rgba(0, 180, 216, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4cc9f0;
+            margin: 0;
+        }
+
+        /* ตารางข้อมูล */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: rgba(0, 180, 216, 0.15);
+            color: #4cc9f0;
+            padding: 12px 14px;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(0, 180, 216, 0.3);
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .balance-text {
+            font-weight: 700;
+            color: #4cc9f0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-action {
+            background: rgba(0, 180, 216, 0.2);
+            color: #4cc9f0;
+            border: 1px solid rgba(0, 180, 216, 0.4);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #4cc9f0;
+            color: #0b132b;
+        }
+
+        .btn-delete {
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #ff6b6b;
+            color: #ffffff;
+        }
+
+        /* Modal ปรับยอดเงิน */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 19, 43, 0.8);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .modal-card {
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(11, 19, 43, 0.95));
+            border: 1px solid rgba(0, 180, 216, 0.4);
+            width: 100%;
+            max-width: 380px;
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            box-sizing: border-box;
+            animation: popUpAnim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popUpAnim {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input, .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-select option {
+            background: #0b132b;
+            color: #ffffff;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            background: #4cc9f0;
+            color: #0b132b;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #3aa8cb;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .empty-row {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            padding: 30px;
+        }
+
+        /* 🌟 Toast Notification */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(11, 19, 43, 0.95);
+            border: 1px solid #4cc9f0;
+            color: #ffffff;
+            padding: 14px 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            pointer-events: auto;
+            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.error {
+            border-color: #ff6b6b;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- พื้นที่แจ้งเตือนแบบ Toast -->
+    <div id="toast-container"></div>
+
+    <!-- 🔐 หน้าจอเข้าสู่ระบบแอดมิน -->
+    <div class="login-wrapper" id="login-box">
+        <h2 class="login-title">⭐ Admin Login</h2>
+        <p class="login-subtitle">NorthStar Bank Security System</p>
+        
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" id="admin-user" class="form-input" placeholder="กรอกชื่อผู้ใช้แอดมิน">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="admin-pass" class="form-input" placeholder="กรอกรหัสผ่าน">
+        </div>
+        <div class="form-group">
+            <label class="form-label">PIN (6 หลัก)</label>
+            <input type="password" id="admin-pin" class="form-input" maxlength="6" placeholder="รหัส PIN 6 หลัก">
+        </div>
+        <button type="button" class="btn-submit" onclick="handleAdminLogin()" style="margin-top: 10px;">เข้าสู่ระบบ</button>
+    </div>
+
+    <!-- 📋 หน้าแดชบอร์ดแอดมิน -->
+    <div class="container" id="admin-dashboard">
+        <div class="header-card">
+            <div class="header-left">
+                <h1 class="header-title">⭐ NorthStar Bank <span>Admin Dashboard</span></h1>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="search-input" class="search-box" placeholder="🔍 ค้นหาชื่อบัญชี หรือเลขบัญชี...">
+                <button type="button" class="btn-logout" onclick="handleAdminLogout()">🚪 ออกจากระบบ</button>
+            </div>
+        </div>
+
+        <div class="card-box">
+            <h2 class="section-title">📋 รายชื่อบัญชีผู้ใช้งานทั้งหมดในระบบ</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ชื่อบัญชี (Name)</th>
+                            <th>ประเภท</th>
+                            <th>เลขบัญชี (10 หลัก)</th>
+                            <th>ยอดเงินคงเหลือ</th>
+                            <th style="text-align: center;">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- เรนเดอร์ด้วย JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับเพิ่ม/ลดเงิน -->
+    <div class="modal" id="adjustModal">
+        <div class="modal-card">
+            <h3 class="section-title" id="modal-acc-title">✨ ปรับยอดเงินบัญชี</h3>
+            <div class="form-group">
+                <label class="form-label">การดำเนินการ</label>
+                <select id="adjust-type" class="form-select">
+                    <option value="add">➕ เพิ่มเงินเข้าบัญชี</option>
+                    <option value="sub">➖ ลดเงินออกจากบัญชี</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">จำนวนเงิน (บาท)</label>
+                <input type="number" id="adjust-amount" class="form-input" placeholder="0.00" min="1">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                <button type="button" class="btn-submit" onclick="confirmAdjust()">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // เช็คสถานะการเข้าสู่ระบบแอดมินค้างไว้หรือไม่
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+            document.getElementById('login-box').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'flex';
+            document.body.style.justifyContent = 'flex-start';
+        }
+
+        // ฟังก์ชันตรวจสอบล็อกอินแอดมิน
+        function handleAdminLogin() {
+            const u = document.getElementById('admin-user').value.trim();
+            const p = document.getElementById('admin-pass').value.trim();
+            const pin = document.getElementById('admin-pin').value.trim();
+
+            if (u === 'admin' && p === 'adminciily' && pin === '171248') {
+                localStorage.setItem('admin_logged_in', 'true');
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'flex';
+                document.body.style.justifyContent = 'flex-start';
+                showToast('ยินดีต้อนรับท่านแอดมินเข้าสู่ระบบค่ะ! 🚀');
+                renderTable();
+            } else {
+                showToast('ชื่อผู้ใช้ รหัสผ่าน หรือ PIN ไม่ถูกต้องค่ะ', true);
+            }
+        }
+
+        // 🚪 ฟังก์ชันออกจากระบบแอดมิน
+        function handleAdminLogout() {
+            localStorage.removeItem('admin_logged_in');
+            document.getElementById('admin-dashboard').style.display = 'none';
+            document.getElementById('login-box').style.display = 'flex';
+            document.body.style.justifyContent = 'center';
+            document.getElementById('admin-user').value = '';
+            document.getElementById('admin-pass').value = '';
+            document.getElementById('admin-pin').value = '';
+            showToast('ออกจากระบบเรียบร้อยแล้วค่ะ 👋');
+        }
+
+        // โหลดข้อมูลจาก LocalStorage
+        let allAccounts = JSON.parse(localStorage.getItem('user_accounts')) || [
+            { accountNumber: '3837198028', accountName: 'บัญชีออมทรัพย์หลัก', accountType: 'บัญชีส่วนตัว', balance: 1500.00 },
+            { accountNumber: '9928173645', accountName: 'บัญชีร้านค้าออนไลน์', accountType: 'บัญชีธุรกิจ', balance: 5400.00 }
+        ];
+
+        let selectedAccountIndex = null;
+
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            
+            const icon = isError ? '⚠️' : '✨';
+            toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        function renderTable(filterText = '') {
+            const tbody = document.getElementById('user-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = allAccounts.filter(acc => 
+                acc.accountName.toLowerCase().includes(filterText.toLowerCase()) || 
+                acc.accountNumber.includes(filterText)
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-row">ไม่พบข้อมูลบัญชีในระบบค่ะ 🌌</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((acc) => {
+                const originalIndex = allAccounts.findIndex(item => item.accountNumber === acc.accountNumber);
+                const balanceFormatted = Number(acc.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${acc.accountName}</strong></td>
+                    <td>${acc.accountType || 'บัญชีส่วนตัว'}</td>
+                    <td style="font-family: monospace;">${acc.accountNumber}</td>
+                    <td class="balance-text">฿${balanceFormatted}</td>
+                    <td style="text-align: center;">
+                        <div class="action-buttons">
+                            <button type="button" class="btn-action" onclick="openAdjustModal(${originalIndex})">💵 ปรับยอด</button>
+                            <button type="button" class="btn-delete" onclick="deleteAccount(${originalIndex})">🗑️ ลบ</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('search-input')?.addEventListener('input', (e) => {
+            renderTable(e.target.value);
+        });
+
+        window.openAdjustModal = function(index) {
+            selectedAccountIndex = index;
+            const acc = allAccounts[index];
+            document.getElementById('modal-acc-title').innerText = `✨ ปรับยอดเงิน: ${acc.accountName}`;
+            document.getElementById('adjust-amount').value = '';
+            document.getElementById('adjustModal').style.display = 'flex';
+        };
+
+        window.closeModal = function() {
+            document.getElementById('adjustModal').style.display = 'none';
+            selectedAccountIndex = null;
+        };
+
+        window.confirmAdjust = function() {
+            const type = document.getElementById('adjust-type').value;
+            const amount = parseFloat(document.getElementById('adjust-amount').value);
+
+            if (!amount || amount <= 0) {
+                showToast('กรุณากรอกจำนวนเงินให้ถูกต้องด้วยนะคะ', true);
+                return;
+            }
+
+            if (selectedAccountIndex !== null) {
+                if (type === 'add') {
+                    allAccounts[selectedAccountIndex].balance += amount;
+                } else {
+                    if (allAccounts[selectedAccountIndex].balance < amount) {
+                        showToast('ยอดเงินในบัญชีไม่พอให้หักลดค่ะ', true);
+                        return;
+                    }
+                    allAccounts[selectedAccountIndex].balance -= amount;
+                }
+
+                localStorage.setItem('user_accounts', JSON.stringify(allAccounts));
+                renderTable(document.getElementById('search-input').value);
+                closeModal();
+                showToast('ปรับยอดเงินสำเร็จเรียบร้อยแล้วค่ะ! 🎉');
+            }
+        };
+
+        // 🗑️ ฟังก์ชันลบบัญชีผู้ใช้จากระบบแอดมิน
+        window.deleteAccount = function(index) {
+            const acc = allAccounts[index];
+            if (confirm(`คุณต้องการลบบัญชี "${acc.accountName}" (${acc.accountNumber}) ออกจากระบบใช่หรือไม่?`)) {
+                allAccounts.splice(index, 1);
+                localStorage.setItem('user_accounts', JSON.stringify(allAccounts));
+                renderTable(document.getElementById('search-input').value);
+                showToast('ลบบัญชีออกจากระบบเรียบร้อยแล้วค่ะ 🗑️');
+            }
+        };
+
+        // โหลดตารางรอไว้ล่วงหน้าถ้าล็อกอินแล้ว
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+            renderTable();
+        }
+    </script>
+</body>
+</html>
